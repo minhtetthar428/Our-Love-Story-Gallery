@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>💕 Our Love Gallery 💕</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans Myanmar', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #ffe4e1, #fff0f5);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      transform: rotate(45deg);
+      animation: float 8s infinite;
+      opacity: 0.6;
+    }
+    .heart::before, .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      border-radius: 50%;
+    }
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+    @keyframes float {
+      0% {
+        bottom: 0;
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        bottom: 100vh;
+        transform: translateX(100px);
+        opacity: 0;
+      }
+    }
+
+    #password-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #ffe4e1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+    #password-screen input {
+      padding: 12px;
+      font-size: 18px;
+      border: 2px solid #e91e63;
+      border-radius: 8px;
+      margin: 10px;
+    }
+    #password-screen button {
+      padding: 10px 20px;
+      background: #e91e63;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    h1 {
+      text-align: center;
+      color: #e91e63;
+      margin-top: 40px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .filter {
+      text-align: center;
+      margin: 10px auto;
+    }
+    .filter button {
+      padding: 8px 16px;
+      margin: 5px;
+      background-color: #ff4081;
+      border: none;
+      color: white;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    /* Gallery grid */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .gallery figure {
+      margin: 0;
+      text-align: center;
+      cursor: pointer;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+      position: relative;
+      overflow: visible;
+    }
+    .gallery figure:hover {
+      transform: translateY(-5px);
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 15px 15px 0 0;
+      display: block;
+    }
+
+    figcaption {
+      padding: 10px;
+      font-weight: bold;
+      color: #e91e63;
+    }
+
+    /* Comment box below image */
+    .comment-box {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 10px;
+      font-size: 14px;
+      border: 1.5px solid #e91e63;
+      border-radius: 0 0 15px 15px;
+      resize: vertical;
+      font-family: 'Noto Sans Myanmar', sans-serif;
+      outline: none;
+    }
+
+    /* Popup full image */
+    .popup {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      align-items: center;
+      justify-content: center;
+    }
+    .popup img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+    }
+    .popup.active {
+      display: flex;
+    }
+
+    /* Thumbnail slideshow */
+    .thumb-slideshow {
+      max-width: 800px;
+      margin: 20px auto 40px auto;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      overflow: hidden;
+      user-select: none;
+    }
+    .thumb-slideshow img {
+      width: 100px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.4s, border-color 0.4s;
+    }
+    .thumb-slideshow img.active {
+      opacity: 1;
+      border-color: #e91e63;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .thumb-slideshow img {
+        width: 70px;
+        height: 50px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Floating hearts -->
+  <div class="heart" style="left: 10%; animation-delay: 0s"></div>
+  <div class="heart" style="left: 30%; animation-delay: 2s"></div>
+  <div class="heart" style="left: 50%; animation-delay: 4s"></div>
+  <div class="heart" style="left: 70%; animation-delay: 6s"></div>
+  <div class="heart" style="left: 80%; animation-delay: 7s"></div>
+  <div class="heart" style="left: 90%; animation-delay: 8s"></div>
+  <div class="heart" style="left: 90%; animation-delay: 9s"></div>
+  <div class="heart" style="left: 90%; animation-delay: 9s"></div>
+
+  <!-- Password screen -->
+  <div id="password-screen">
+    <h2>Enter Password to View Our Memories 💖</h2>
+    <input type="password" id="passwordInput" placeholder="Enter Password" />
+    <button onclick="checkPassword()">Enter</button>
+  </div>
+
+  <!-- Background music -->
+  <audio id="bg-music" loop>
+    <source src="achit.mp3" type="audio/mp3" />
+  </audio>
+
+  <h1>💕 Our Love Story Gallery 💕</h1>
+
+  <!-- Thumbnail slideshow -->
+  <div class="thumb-slideshow" id="thumbSlideshow">
+    <img src="1.jpg" alt="Memory 1" class="active">
+    <img src="2.jpg" alt="Memory 2">
+    <img src="3.jpg" alt="Memory 3">
+    <img src="4.jpg" alt="Memory 4">
+    <img src="5.jpg" alt="Memory 5">
+    <img src="6.jpg" alt="Memory 6">
+    <img src="7.jpg" alt="Memory 7">
+    <img src="8.jpg" alt="Memory 8">
+    <img src="9.jpg" alt="Memory 9">
+    <img src="11.jpg" alt="Memory 10">
+    <img src="22.jpg" alt="Memory 11">
+    <img src="33.jpg" alt="Memory 12">
+    <img src="44.jpg" alt="Memory 13">
+    <img src="55.jpg" alt="Memory 14">
+    <img src="66.jpg" alt="Memory 15">
+    <img src="77.jpg" alt="Memory 16">
+    <img src="88.jpg" alt="Memory 17">
+    <img src="99.jpg" alt="Memory 18">
+    <img src="111.jpg" alt="Memory 19">
+    <img src="222.jpg" alt="Memory 20">
+  </div>
+
+  <!-- Filter buttons -->
+  <div class="filter">
+    <button onclick="filterGroup('all')">All</button>
+    <button onclick="filterGroup('park')">Park</button>
+    <button onclick="filterGroup('street')"> Street</button>
+    <button onclick="filterGroup('pagoda')">Pagoda</button>
+  </div>
+
+  <!-- Gallery container -->
+  <div class="gallery" id="gallery"></div>
+
+  <!-- Popup for full image -->
+  <div id="img-popup" class="popup" onclick="closePopup()">
+    <img id="popup-img" src="" alt="Popup">
+  </div>
+
+<script>
+  // Image data
+  const imagesData = [
+    {src: "1.jpg", caption: "လှပနေသောခြေထောက်နှစ်စုံ", group:"park"},
+    {src: "2.jpg", caption: "ဘုရားမှာနှစ်ယောက်သား", group: "pagoda"},
+    {src: "3.jpg", caption: "ဘုရားမှာနှစ်ယောက်သား", group: "pagoda"},
+    {src: "4.jpg", caption: "💞 အမှတ်တရ", group: "travel"},
+    {src: "5.jpg", caption: " အပြုံးတွေကကြွေ", group: "street"},
+    {src: "6.jpg", caption: "ချစ်စရာလေး", group: "street"},
+    {src: "7.jpg", caption: "ဘုရားမှာနှစ်ယောက်သား", group: "pagoda"},
+    {src: "8.jpg", caption: "ဘုရားမှာနှစ်ယောက်သား", group: "pagoda"},
+    {src: "9.jpg", caption: "လှပနေသောသူမ ", group: "park"},
+    {src: "11.jpg", caption: "🌅 နေရာတစ်ခု", group: "travel"},
+    {src: "22.jpg", caption: "🎁 အမှတ်တရ", group: "park"},
+    {src: "33.jpg", caption: "ချစ်စရာ", group: "park"},
+    {src: "44.jpg", caption: "🏞️ သဘာဝအလှ", group: "street"},
+    {src: "55.jpg", caption: "အပြုံးတွေ", group: "street"},
+    {src: "66.jpg", caption: "အပြုံးတွေဆုံ ", group: "pagoda"},
+    {src: "77.jpg", caption: "နမ်းမှာလား", group: "street"},
+    {src: "88.jpg", caption: "🎉 ပျော်ရွှင်စရာ", group: "birthday"},
+    {src: "99.jpg", caption: "ချစ်ဖို့ကောင်း ", group: "street"},
+    {src: "111.jpg", caption: "တစ်မျိုးပဲ", group: "street"},
+    {src: "222.jpg", caption: "အကြည့်လေးက", group: "park"},
+  ];
+
+  const gallery = document.getElementById('gallery');
+
+  // Render gallery
+  imagesData.forEach(({src, caption, group}, index) => {
+    const figure = document.createElement('figure');
+    figure.className = `img-item ${group}`;
+
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = caption;
+    img.onclick = () => openPopup(src);
+
+    const figcaption = document.createElement('figcaption');
+    figcaption.textContent = caption;
+
+    const commentBox = document.createElement('textarea');
+    commentBox.className = 'comment-box';
+    commentBox.placeholder = "ဤပုံအတွက် သင့်ထင်မြင်ချက်ရေးပါ...";
+    commentBox.rows = 2;
+    commentBox.dataset.index = index;
+
+    const savedComment = localStorage.getItem(`comment_${index}`);
+    if (savedComment) commentBox.value = savedComment;
+
+    commentBox.addEventListener('input', (e) => {
+      localStorage.setItem(`comment_${e.target.dataset.index}`, e.target.value);
+    });
+
+    figure.appendChild(img);
+    figure.appendChild(figcaption);
+    figure.appendChild(commentBox);
+    gallery.appendChild(figure);
+  });
+
+  function filterGroup(group) {
+    const items = document.querySelectorAll('.gallery .img-item');
+    if (group === 'all') {
+      items.forEach(i => i.style.display = 'block');
+    } else {
+      items.forEach(i => {
+        i.style.display = i.classList.contains(group) ? 'block' : 'none';
+      });
+    }
+  }
+
+  const popup = document.getElementById('img-popup');
+  const popupImg = document.getElementById('popup-img');
+
+  function openPopup(src) {
+    popupImg.src = src;
+    popup.classList.add('active');
+  }
+  function closePopup() {
+    popup.classList.remove('active');
+  }
+
+  const thumbs = document.querySelectorAll('#thumbSlideshow img');
+  let currentIndex = 0;
+  const changeInterval = 3000;
+
+  thumbs.forEach((thumb, i) => {
+    thumb.addEventListener('click', () => {
+      setActiveThumbnail(i);
+      openPopup(thumb.src);
+    });
+  });
+
+  function setActiveThumbnail(index) {
+    thumbs[currentIndex].classList.remove('active');
+    currentIndex = index;
+    thumbs[currentIndex].classList.add('active');
+  }
+
+  function autoSlide() {
+    let nextIndex = (currentIndex + 1) % thumbs.length;
+    setActiveThumbnail(nextIndex);
+  }
+  setInterval(autoSlide, changeInterval);
+
+  function checkPassword() {
+    const input = document.getElementById('passwordInput');
+    const pass = input.value.trim();
+    if (pass === '15.12.2024') {
+      document.getElementById('password-screen').style.display = 'none';
+      document.getElementById('bg-music').play();
+    } else {
+      alert("မှားနေပါသည်။ ထပ်မံကြိုးစားပါ။");
+      input.value = '';
+      input.focus();
+    }
+  }
+</script>
+</body>
+</html>
